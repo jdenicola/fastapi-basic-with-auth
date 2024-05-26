@@ -17,5 +17,5 @@ def print_routes(application):
 print_routes(app)
 
 if __name__ == "__main__":
-    config = Config
+    config = Config()
     uvicorn.run(app, host=config.UVICORN_HOST, port=int(config.UVICORN_PORT))

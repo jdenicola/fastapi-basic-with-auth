@@ -10,13 +10,18 @@ sample_route = APIRouter(
 
 
 @sample_route.get("/")
-async def sample_route_get(model: SampleModel):
-    return model
+async def sample_route_get():
+    return "Hello!"
+
+
+@sample_route.get("/{id}")
+async def sample_route_path_get(test_id: int):
+    return f"Path in route is {test_id}!"
 
 
 @sample_route.get("/hidden", include_in_schema=False)
-async def sample_hidden_route_get(model: SampleModel):
-    return model
+async def sample_hidden_route_get():
+    return "Hidden!"
 
 
 @sample_route.post("/", dependencies=[Depends(SampleRoleQuery([SampleRoleEnum.ADMIN]))])

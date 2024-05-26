@@ -1,32 +1,29 @@
-from fastapi import Request
-from fastapi import HTTPException
-from starlette.concurrency import iterate_in_threadpool
+import sys
 
 
-async def get_body(request: Request) -> bytes:
-    return await request.body()
+# Sample logger
+class LoggerWriter:
+    """
+    Example Logger Writer:
+    Takes all output from stdout and stderr and prints them on stdout's console. Not required by flask.
+    """
+
+    def __init__(self, log_name):
+        self.log_name = log_name
+        self.buf = []
+
+    def write(self, msg):
+        msg = msg.replace("\n", '')
+        if len(msg) > 0:
+            self.buf.append(f"[{self.log_name}] " + msg)
+            print(''.join(self.buf), file=sys.__stdout__, flush=True)
+            self.buf = []
+
+    def flush(self):
+        self.buf = []
+        pass
 
 
-async def _log_response_to_logger(response, body, request: Request, callback):
-    response_body = [chunk async for chunk in response.body_iterator]
-    response.body_iterator = iterate_in_threadpool(iter(response_body))
-    response_data = []
-
-    if len(response_body) > 0:
-        response_data = response_body[0].decode()
-
-    if len(response_data) > 0:
-        try:
-            payload = body if body else str(request.query_params)
-        except HTTPException as e:
-            payload = {
-                'decodeError': True, 'msg': e.detail
-            }
-        log_body = {
-            'route': request.url.path,
-            'payload': payload,
-            'response': response_data,
-            'status_code': response.status_code,
-            'original': response_data
-        }
-        callback(log_body)
+# Para acceder a stdout/stderr, usar sys.__stdout__/sys.__stderr__
+# sys.stdout = LoggerWriter("INFO")
+# sys.stderr = LoggerWriter("ERROR")
