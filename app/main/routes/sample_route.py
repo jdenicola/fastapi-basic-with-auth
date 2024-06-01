@@ -14,7 +14,7 @@ async def sample_route_get():
     return "Hello!"
 
 
-@sample_route.get("/{id}")
+@sample_route.get("/path/{id}")
 async def sample_route_path_get(test_id: int):
     return f"Path in route is {test_id}!"
 
